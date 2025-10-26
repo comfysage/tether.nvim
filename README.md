@@ -1,6 +1,4 @@
-# tether.nvim
-
-Track and reattach Neovim sessions
+# tether.nvim - track and reattach neovim sessions
 
 tether.nvim makes Neovim’s remote UI feature easy to use by treating servers as
 persistent tethers you can reattach to later. it tracks open servers, lists
@@ -16,9 +14,10 @@ them, and helps you connect or detach safely without shutting anything down.
 ## :gear: commands
 
 ```
-:Tether track   — register the current server (auto on UIEnter)
-:Tether select  — attach to a tracked server
-:Tether print   — print the current registry list
+:Tether track   - register the current server (auto on UIEnter)
+:Tether select  - attach to a tracked server
+:Tether print   - print the current registry list
+:Tether last    - attach to last server
 ```
 
 ## example workflow
@@ -44,8 +43,12 @@ detach:
 open a new instance and select the previous session:
 
 ```
-:Tether! select -- the ! denotes that the current empty session should be closed
+:Tether! select
+or
+:Tether! last
 ```
+
+here the `!` denotes that the current (empty) session should be closed.
 
 ## configuration
 
