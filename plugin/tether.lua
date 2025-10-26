@@ -27,14 +27,20 @@ end)
 
 vim.schedule(function()
   vim.api.nvim_create_user_command("Tether", function(args)
-    if args.fargs[1] == "track" then
+    local fargs = vim.iter(args.fargs)
+    local cmd = fargs:next()
+    if cmd == "track" then
       require("tether").track()
-      return
-    elseif args.fargs[1] == "select" then
+    elseif cmd == "select" then
       require("tether").select(args.bang)
-      return
-    elseif args.fargs[1] == "print" then
+    elseif cmd == "print" then
       require("tether").print()
+    elseif cmd == "note" then
+      require("tether").note(fargs:fold("", function(acc, v)
+        return acc .. (#acc > 0 and " " or "") .. v
+      end))
+    else
+      vim.notify("unknown command: " .. cmd, vim.log.levels.ERROR)
     end
   end, {
     nargs = "+",
@@ -44,6 +50,7 @@ vim.schedule(function()
         "track",
         "select",
         "print",
+        "note",
       }
     end,
   })

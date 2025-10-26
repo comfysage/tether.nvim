@@ -86,7 +86,10 @@ end
 ---@nodiscard
 function Data:register(socket, wd)
   return self:updatewrap(function()
-    rawset(self, socket, { dir = wd, tick = os.time() })
+    local prev = rawget(self, socket) or {}
+    prev.dir = wd
+    prev.tick = os.time()
+    rawset(self, socket, prev)
   end)
 end
 
@@ -96,7 +99,20 @@ end
 function Data:tick(socket)
   return self:updatewrap(function()
     local prev = rawget(self, socket)
-    rawset(self, socket, { dir = prev.dir, tick = os.time() })
+    prev.tick = os.time()
+    rawset(self, socket, prev)
+  end)
+end
+
+---@param socket string
+---@param note string
+---@return string? err
+---@nodiscard
+function Data:note(socket, note)
+  return self:updatewrap(function()
+    local prev = rawget(self, socket)
+    prev.note = note
+    rawset(self, socket, prev)
   end)
 end
 

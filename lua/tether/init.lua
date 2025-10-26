@@ -21,6 +21,17 @@ tether.tick = function()
   end
 end
 
+---@param note string
+tether.note = function(note)
+  local socket = vim.v.servername
+
+  local err = require("tether.data"):note(socket, note)
+  if err then
+    vim.notify(err, vim.log.levels.ERROR)
+    return
+  end
+end
+
 -- most recent first
 tether.print = function()
   local iter = require("tether.data"):sorted_iter()
@@ -29,6 +40,9 @@ tether.print = function()
     iter:fold({}, function(acc, item)
       table.insert(acc, { item[1] .. ": ", "NonText" })
       table.insert(acc, { item[2].dir, "Directory" })
+      if item[2].note and #item[2].note > 0 then
+        table.insert(acc, { " " .. item[2].note })
+      end
       table.insert(acc, { "\n" })
       return acc
     end),
@@ -50,7 +64,11 @@ tether.select = function(detach)
     vim
       .iter(ipairs(lst))
       :map(function(_, item)
-        return (item[1] == vim.v.servername and "[current] " or "") .. item[1] .. ": " .. item[2].dir
+        return (item[1] == vim.v.servername and "[current] " or "")
+          .. item[1]
+          .. ": "
+          .. item[2].dir
+          .. (item[2].note and #item[2].note > 0 and " " .. item[2].note or "")
       end)
       :totable(),
     { prompt = "select server" },
