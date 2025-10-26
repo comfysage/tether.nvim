@@ -27,9 +27,18 @@ tether.switch = function(socket, detach)
   vim.api.nvim_cmd({ cmd = "connect", args = { socket }, bang = detach }, {})
 end
 
----@param note string
+---@param note? string
 tether.note = function(note)
   local socket = vim.v.servername
+
+  if not note then
+    return vim.ui.input({ prompt = "note: " }, function(input)
+      if not input then
+        return
+      end
+      tether.note(input)
+    end)
+  end
 
   local err = require("tether.data"):note(socket, note)
   if err then

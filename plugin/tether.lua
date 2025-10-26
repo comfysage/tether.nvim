@@ -36,9 +36,7 @@ vim.schedule(function()
     elseif cmd == "print" then
       require("tether").print()
     elseif cmd == "note" then
-      require("tether").note(fargs:fold("", function(acc, v)
-        return acc .. (#acc > 0 and " " or "") .. v
-      end))
+      require("tether").note(fargs:peek() and table.concat(fargs:totable(), " "))
     elseif cmd == "last" then
       require("tether").last(args.bang)
     else
