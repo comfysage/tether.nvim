@@ -39,6 +39,8 @@ vim.schedule(function()
       require("tether").note(fargs:fold("", function(acc, v)
         return acc .. (#acc > 0 and " " or "") .. v
       end))
+    elseif cmd == "last" then
+      require("tether").last(args.bang)
     else
       vim.notify("unknown command: " .. cmd, vim.log.levels.ERROR)
     end
@@ -51,6 +53,7 @@ vim.schedule(function()
         "select",
         "print",
         "note",
+        "last",
       }
     end,
   })

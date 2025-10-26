@@ -21,6 +21,12 @@ tether.tick = function()
   end
 end
 
+---@param socket string
+---@param detach? boolean
+tether.switch = function(socket, detach)
+  vim.api.nvim_cmd({ cmd = "connect", args = { socket }, bang = detach }, {})
+end
+
 ---@param note string
 tether.note = function(note)
   local socket = vim.v.servername
@@ -81,10 +87,23 @@ tether.select = function(detach)
       local socket = item[1]
 
       vim.schedule(function()
-        vim.api.nvim_cmd({ cmd = "connect", args = { socket }, bang = detach }, {})
+        tether.switch(socket, detach)
       end)
     end
   )
+end
+
+---@param detach? boolean
+tether.last = function(detach)
+  local last = require("tether.data"):sorted_iter():find(function(item)
+    return item[1] and item[1] ~= vim.v.servername
+  end)
+  if not last or not last[1] then
+    vim.notify("no last server", vim.log.levels.ERROR)
+    return
+  end
+
+  tether.switch(last[1], detach)
 end
 
 return tether
