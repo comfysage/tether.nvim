@@ -14,9 +14,16 @@ end
 tether.print = function()
   local iter = require("tether.data"):iter()
 
-  vim.print(iter:fold("", function(acc, k, v)
-    return acc .. k .. ": " .. v .. "\n"
-  end))
+  vim.api.nvim_echo(
+    iter:fold({}, function(acc, k, v)
+      table.insert(acc, { k .. ": ", "NonText" })
+      table.insert(acc, { v, "Directory" })
+      table.insert(acc, { "\n" })
+      return acc
+    end),
+    false,
+    {}
+  )
 end
 
 ---@param detach? boolean
