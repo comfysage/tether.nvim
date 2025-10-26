@@ -38,7 +38,7 @@ tether.select = function(detach)
     { prompt = "select server" },
     function(_, idx)
       local item = lst[idx]
-      if not item then
+      if not item or type(item) ~= "table" or #item == 0 then
         return
       end
 
