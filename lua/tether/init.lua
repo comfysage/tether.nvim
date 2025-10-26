@@ -11,13 +11,24 @@ tether.track = function()
   end
 end
 
+tether.tick = function()
+  local socket = vim.v.servername
+
+  local err = require("tether.data"):tick(socket)
+  if err then
+    vim.notify(err, vim.log.levels.ERROR)
+    return
+  end
+end
+
+-- most recent first
 tether.print = function()
-  local iter = require("tether.data"):iter()
+  local iter = require("tether.data"):sorted_iter()
 
   vim.api.nvim_echo(
-    iter:fold({}, function(acc, k, v)
-      table.insert(acc, { k .. ": ", "NonText" })
-      table.insert(acc, { v, "Directory" })
+    iter:fold({}, function(acc, item)
+      table.insert(acc, { item[1] .. ": ", "NonText" })
+      table.insert(acc, { item[2].dir, "Directory" })
       table.insert(acc, { "\n" })
       return acc
     end),
@@ -28,7 +39,7 @@ end
 
 ---@param detach? boolean
 tether.select = function(detach)
-  local iter = require("tether.data"):iter()
+  local iter = require("tether.data"):sorted_iter()
   local lst = iter:totable()
   if #lst == 0 then
     vim.notify("no servers", vim.log.levels.INFO)
@@ -39,7 +50,7 @@ tether.select = function(detach)
     vim
       .iter(ipairs(lst))
       :map(function(_, item)
-        return (item[1] == vim.v.servername and "[current] " or "") .. item[1] .. ": " .. item[2]
+        return (item[1] == vim.v.servername and "[current] " or "") .. item[1] .. ": " .. item[2].dir
       end)
       :totable(),
     { prompt = "select server" },
