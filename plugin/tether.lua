@@ -25,34 +25,14 @@ vim.keymap.set("n", "<Plug>(tether-select)", function()
   require("tether").select()
 end)
 
-vim.schedule(function()
-  vim.api.nvim_create_user_command("Tether", function(args)
-    local fargs = vim.iter(args.fargs)
-    local cmd = fargs:next()
-    if cmd == "track" then
-      require("tether").track()
-    elseif cmd == "select" then
-      require("tether").select(args.bang)
-    elseif cmd == "print" then
-      require("tether").print()
-    elseif cmd == "note" then
-      require("tether").note(fargs:peek() and table.concat(fargs:totable(), " "))
-    elseif cmd == "last" then
-      require("tether").last(args.bang)
-    else
-      vim.notify("unknown command: " .. cmd, vim.log.levels.ERROR)
-    end
-  end, {
-    nargs = "+",
-    bang = true,
-    complete = function()
-      return {
-        "track",
-        "select",
-        "print",
-        "note",
-        "last",
-      }
-    end,
-  })
-end)
+if vim.v.vim_did_enter > 0 then
+  require("tether").init()
+  return
+end
+
+vim.api.nvim_create_autocmd("VimEnter", {
+  group = group,
+  callback = function()
+    require("tether").init()
+  end,
+})
