@@ -75,31 +75,27 @@ tether.select = function(detach)
     return
   end
 
-  vim.ui.select(
-    vim
-      .iter(ipairs(lst))
-      :map(function(_, item)
-        return (item[1] == vim.v.servername and "[current] " or "")
-          .. item[1]
-          .. ": "
-          .. item[2].dir
-          .. (item[2].note and #item[2].note > 0 and " " .. item[2].note or "")
-      end)
-      :totable(),
-    { prompt = "select server" },
-    function(_, idx)
-      local item = lst[idx]
-      if not item or type(item) ~= "table" or #item == 0 then
-        return
-      end
-
-      local socket = item[1]
-
-      vim.schedule(function()
-        tether.switch(socket, detach)
-      end)
+  vim.ui.select(lst, {
+    prompt = "select server",
+    format_item = function(item)
+      return (item[1] == vim.v.servername and "[current] " or "")
+        .. item[1]
+        .. ": "
+        .. item[2].dir
+        .. (item[2].note and #item[2].note > 0 and " " .. item[2].note or "")
+    end,
+  }, function(_, idx)
+    local item = lst[idx]
+    if not item or type(item) ~= "table" or #item == 0 then
+      return
     end
-  )
+
+    local socket = item[1]
+
+    vim.schedule(function()
+      tether.switch(socket, detach)
+    end)
+  end)
 end
 
 ---@param detach? boolean
